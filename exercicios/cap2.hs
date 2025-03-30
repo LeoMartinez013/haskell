@@ -49,6 +49,7 @@ sizeStrings = map length . filter (odd . length)
 -- Eu interpetrei que eu devo criar uma função semelhante a função nativa "head"
 funcHead :: [a] -> a
 funcHead = last . take 1
+
 -- Outro jeito que descobri que lida com listas vazias, não sei ainda se é utilizavel mas parece legal
 funcSafeHead :: [a] -> Maybe a
 funcSafeHead []    = Nothing
