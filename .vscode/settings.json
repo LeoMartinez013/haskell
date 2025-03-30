@@ -1,0 +1,26 @@
+{
+    "todo-tree.regex.regex": "((--\\s*($TAGS))|\\{-\\s($TAGS).*(\\n.*)*-})",
+    "todo-tree.general.showActivityBarBadge": false,
+    "todo-tree.general.tags": [
+        "CAP2",
+        "CAP3"
+    ],
+    "todo-tree.highlights.defaultHighlight": {
+        "type": "tag",
+        "fontWeight": "bold",
+        "foreground": "#000000",
+        "opacity": 90
+    },
+    "todo-tree.highlights.customHighlight": {
+        "CAP2": {
+            "background": "#FFA500",
+            "iconColour": "#FFA500",
+            "icon": "tasklist"
+        },
+        "CAP3": {
+            "background": "#00b618",
+            "iconColour": "#00b618",
+            "icon": "tasklist"
+        }
+    },
+}
