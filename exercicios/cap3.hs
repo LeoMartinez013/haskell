@@ -47,3 +47,73 @@ jogar Tesoura Papel = VitoraJogador1
 jogar Papel Pedra   = VitoraJogador1
 jogar j1 j2 | j1 == j2  = Empate | otherwise = VitoraJogador2
 
+-- 3.4
+consoantes :: String -> String
+consoantes xs = [ x | x <- xs, x `notElem` "aeiouAEIOU"]
+
+-- 3.5
+data Imperial = Inch Double | Yard Double | Foot Double deriving Show
+
+converterMetros :: Imperial -> Double
+converterMetros (Inch l) = l*0.0254
+converterMetros (Yard l) = l*0.9144
+converterMetros (Foot l) = l*0.3048
+
+converterImperial :: Double -> Imperial -> Double
+converterImperial l (Inch _) = l / converterMetros (Inch 1)
+converterImperial l (Yard _) = l / converterMetros (Yard 1)
+converterImperial l (Foot _) = l / converterMetros (Foot 1)
+
+-- 3.6
+data Mes = Janeiro | Fevereiro | Marco | Abril | Maio | Junho 
+    | Julho | Agosto | Setembro | Novembro | Outubro | Dezembro deriving (Show, Eq)
+
+checaFim :: Mes -> Int
+checaFim Janeiro    = 31
+checaFim Fevereiro  = 28
+checaFim Marco      = 31
+checaFim Abril      = 30
+checaFim Maio       = 31
+checaFim Junho      = 30
+checaFim Julho      = 31
+checaFim Agosto     = 31
+checaFim Setembro   = 30
+checaFim Outubro    = 31
+checaFim Novembro   = 30
+checaFim Dezembro   = 31
+
+prox :: Mes -> Mes
+prox Janeiro   = Fevereiro
+prox Fevereiro = Marco
+prox Marco     = Abril
+prox Abril     = Maio
+prox Maio      = Junho
+prox Junho     = Julho
+prox Julho     = Agosto
+prox Agosto    = Setembro
+prox Setembro  = Outubro
+prox Outubro   = Novembro
+prox Novembro  = Dezembro
+prox Dezembro  = Janeiro
+
+data Hemisferio = Norte | Sul
+  deriving Show
+
+data Estacao = Verao | Outono | Inverno | Primavera
+  deriving Show
+
+estacao :: Mes -> Hemisferio -> Estacao
+estacao mes Norte
+  | mes `elem` [Dezembro, Janeiro, Fevereiro] = Inverno
+  | mes `elem` [Marco, Abril, Maio]           = Primavera
+  | mes `elem` [Junho, Julho, Agosto]           = Verao
+  | mes `elem` [Setembro, Outubro, Novembro]    = Outono
+estacao mes Sul
+  | mes `elem` [Dezembro, Janeiro, Fevereiro] = Verao
+  | mes `elem` [Marco, Abril, Maio]           = Outono
+  | mes `elem` [Junho, Julho, Agosto]           = Inverno
+  | mes `elem` [Setembro, Outubro, Novembro]    = Primavera
+
+-- 3.7
+palimdromo :: String -> Bool
+palimdromo s = s == reverse s
