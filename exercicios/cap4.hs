@@ -1,4 +1,3 @@
-import Distribution.Simple.Utils (xargs, isAbsoluteOnAnyPlatform)
 -- CAP4
 -- EX 4.3
 numPar :: [Int] -> [Int]
