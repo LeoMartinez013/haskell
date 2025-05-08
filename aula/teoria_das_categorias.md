@@ -1,4 +1,4 @@
-## 6.1 CATEGORIAS
+F## 6.1 CATEGORIAS
 Uma categoria C é uma estrutura abstrata composta de objetos e morfismos. Um objeto é uma representação abstrata do que se
 quer estudar (conjuntos, tabelas, palavras, pessoas, animais etc.) e um morfismo é uma relação de objetos que se compõem de forma associativa. Existe também o morfismo neutro, chamado identidade. São coleções simples com três componentes:
 
@@ -9,3 +9,13 @@ quer estudar (conjuntos, tabelas, palavras, pessoas, animais etc.) e um morfismo
 ```haskell
 f . idA = f = idB . f
 ```
+`funtor`: serve para tratar erros
+
+```bash
+ghci> :t map
+map :: (a -> b) -> [a] -> [b]
+ghci> :t fmap
+fmap :: Functor f => (a -> b) -> f a -> f b
+```
+
+
