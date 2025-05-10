@@ -19,3 +19,26 @@ instance Applicative Coisa where
 -- EX 7.3
 -- mult234 :: Double -> Coisa Double
 -- mult234 x = UmaCoisa (x * 2) <*> UmaCoisa (x * 3) <*> UmaCoisa (x * 4)
+
+-- EX 7.4
+data Arvore a = Vazia | Folha a | Raiz a (Arvore a) (Arvore a) deriving (Show, Eq)
+
+instance Functor Arvore where
+    fmap _ Vazia = Vazia
+    fmap f (Folha x) = Folha (f x)
+    fmap f (Raiz x esq dir) = Raiz (f x) (fmap f esq) (fmap f dir)
+
+instance Applicative Arvore where
+    pure = Folha
+    Vazia <*> _ = Vazia
+    _ <*> Vazia = Vazia
+    Folha f <*> Folha x = Folha (f x)
+    Folha f <*> Raiz x esq dir = Raiz (f x) (fmap f esq) (fmap f dir)
+    Raiz f1 e1 d1 <*> Raiz f2 e2 d2 = Raiz (f1 f2) (e1 <*> e2) (d1 <*> d2)
+    
+-- EX 7.5 
+data Fantasma a = Fantasma deriving (Show , Eq)
+
+instance Functor Fantasma where
+    fmap _ Fantasma = Fantasma
+
