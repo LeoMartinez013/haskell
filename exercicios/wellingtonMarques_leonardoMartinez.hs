@@ -1,197 +1,228 @@
--- 2.1 Gere listas
--- a) [1,11,121,1331,14641,161051,1771561]
--- ListaA :: [Int]
-listaA = [11^n | n <- [0..6]]
+-- CAP4
+-- EX 4.3
+numPar :: [Int] -> [Int]
+numPar [] = []
+numPar x = filter even x
 
--- b) [1,2,3,5,6,7,9,10,11,13,14,15,17,18,19,21,22,23,25,26,27,29,30,31,33,34,35,37,38,39]
--- ListaB :: [Int]
-listaB = [x | x <- [1..40], x `mod` 4 /= 0]
+numImpar :: [Int] -> [Int]
+numImpar [] = []
+numImpar x = filter odd x
 
--- c) ["AaBB", "AbBB", "AcBB", "AdB-B", "AeBB", "AfBB","AgBB"]
-listaC :: [String]
-listaC = ["A" ++ [c] ++ "BB" | c <- ['a'..'g']]
+-- EX 4.4
+ehPrimo :: Int -> Bool
+ehPrimo n
+  | n < 2     = False
+  | otherwise = null [x | x <- [2..(floor . sqrt $ fromIntegral n)], n `mod` x == 0]
 
--- d) [5,8,11,17,20,26,29,32,38,41]
--- listaD :: [Int]
-listaD = scanl (+) 5 [3,3,6,3,6,3,3,6,3]
+primos :: [Int] -> [Int]
+primos [] = []
+primos x = filter ehPrimo x
 
--- e) [1.0,0.5,0.25,0.125,0.0625,0.03125]
--- ListaE :: [Int]
-listaE = [1 / 2^n | n <- [0..5]]
+-- EX 4.6
+func :: (String -> String) -> String -> String
+func f s = reverse s ++ f s
 
--- f) [1,10,19,28,37,46,55,64]
--- ListaF :: [Int]
-listaF = [1 + 9*n | n <- [0..7]]
+-- EX 4.7
+data Dia = Domingo | Segunda | Terca | Quarta | Quinta | Sexta | Sabado deriving (Show, Eq)
 
--- g) [2,4,8,10,12,16,18,22,24,28,30]
-listaG :: [Int]
-listaG = scanl (+) 2 [2,4,2,2,4,2,4,2,4,2]
+tercas :: [Dia] -> [Dia]
+tercas [] = []
+tercas (x:xs)
+    | x == Terca = x : tercas xs
+    | otherwise = tercas xs
 
--- h) ['@','A','C','D','E','G','J','L']
--- ListaH :: [String]
-listaH :: [String]
-listaH = map (:[]) "@ACDEGJL"
--- listaH = map (\c -> [c]) ['@','A','C','D','E','G','J','L']
+-- EX 4.8
+data Correncia = Real | Dolar deriving (Show, Eq)
+data Dinheiro = Dinheiro {valor::Double, correncia::Correncia} deriving (Show, Eq)
 
---  2.2 Crie uma função que verifique se o tamanho de uma String é par ou não. Use Bool como retorno.
-isPar :: String -> Bool
-isPar = even . length
+paraDolar :: [Dinheiro] -> [Dinheiro]
+paraDolar [] = []
+paraDolar (x:xs)
+    | correncia x == Dolar = x : paraDolar xs
+    | otherwise = Dinheiro (valor x * 0.1704) Dolar : paraDolar xs
 
---  2.3 Escreva uma função que receba um vetor de Strings e retorne uma lista com todos os elementos em ordem reversa.
-reverseList :: [String] -> [String]
-reverseList = reverse
+paraReal  :: [Dinheiro] -> [Dinheiro]
+paraReal [] = []
+paraReal (x:xs)
+    | correncia x == Real = x : paraReal xs
+    | otherwise = Dinheiro (valor x / 0.1704) Real : paraReal xs
 
---  2.4 Escreva uma função que receba um vetor de Strings e retorne uma lista com o tamanho de cada String. As palavras de tamanho par devem ser excluídas da resposta.
-sizeStrings :: [String] -> [Int]
-sizeStrings = map length . filter (odd . length)
+dolares :: [Dinheiro] -> [Dinheiro]
+dolares [] = []
+dolares x = filter (\ x -> correncia x == Dolar ) x
 
---  2.5 Escreva a função head como composição de duas outras.
--- Interpetramos que devemos criar uma função semelhante a função nativa "head"
-funcHead :: [a] -> a
-funcHead = last . take 1
+sumDolares :: [Dinheiro] -> Double
+sumDolares x = sum (map valor(dolares x))
 
--- Outro jeito que descobrimos que lida com listas vazias, não sei ainda se é utilizavel mas parece legal
-funcSafeHead :: [a] -> Maybe a
-funcSafeHead []    = Nothing
-funcSafeHead (x:_) = Just x
+contDolares :: [Dinheiro] -> Int
+contDolares x = length $ dolares x
 
+-- EX 4.9
+contNegativos :: [Int] -> Int
+contNegativos = foldl (\i x -> i + if x < 0 then 1 else 0) 0
 
---  2.6 Faça uma função que receba uma String e retorne True se esta for um palíndromo; caso contrário, False.
-verifPalindromo :: String -> Bool
-verifPalindromo s = s == reverse s
--- isPalindrome = (==) <*> reverse
+contP :: String -> Int
+contP = foldl (\i x -> i + if x == 'p' || x == 'P' then 1 else 0) 0
 
---  2.7 Faça uma função que receba um inteiro e retorne uma tupla, contendo: o dobro deste número na primeira coordenada, o triplo na segunda, o quádruplo na terceira e o quíntuplo na quarta.
-multiplos :: Int -> (Int, Int, Int, Int)
-multiplos n = (2*n, 3*n, 4*n, 5*n)
+-- Reaproveitando Dia do ex 4.7
+contSabado :: [Dia] -> Int
+contSabado = foldl (\ i x -> i + if x == Sabado then 1 else 0) 0
 
--- 3.1 CRIE O TIPO PERGUNTA COM OS VALUES CONSTRUCTORS SIM OU NAO. FAÇA AS FUNÇÕES SEGUINTES, DETERMINANDO SEUS TIPOS EXPLICITAMENTE.
--- pergNum : recebe via parâmetro uma Pergunta . Retorna 0 para Nao e 1 para Sim .
--- listPergs : recebe via parâmetro uma lista de Perguntas , e retorna 0 s e 1 s correspondentes aos constructores contidos na lista.
--- and' : recebe duas Perguntas como parâmetro e retorna a tabela verdade do and lógico, usando Sim como verdadeiro e Nao como falso.
--- or' : idem ao anterior, porém deve ser usado o ou lógico.
--- not' : idem aos anteriores, porém usando o not lógico.
--- data Pergunta = Sim | Nao deriving Show
+diaParaInt :: Dia -> Int
+diaParaInt x
+    | x == Segunda  = 1
+    | x == Terca    = 2
+    | x == Quarta   = 3
+    | x == Quinta   = 4
+    | x == Sexta    = 5
+    | x == Sabado   = 6
+    | x == Domingo  = 7
 
-pergNum :: Pergunta -> Int
-pergNum Sim = 1
-pergNum Nao = 0
+somaDia :: [Dia] -> Int
+somaDia = foldl (\ i x -> i + diaParaInt x) 0
+import Data.Monoid
 
-listPergs :: [Pergunta] -> [Int]
-listPergs [] = []
-listPergs (x:xs) = pergNum x : listPergs xs
+-- CAP5
+-- EX 5.1
+data TipoProduto = Escritorio | Informatica | Livro | Filme | Total deriving (Show, Eq)
+data Produto = Produto {valor::Double, tp::TipoProduto} | Nada deriving (Show, Eq)
 
-pergToBool :: Pergunta -> Bool
-pergToBool Nao = False
-pergToBool Sim = True
+instance Semigroup Produto where
+    Nada <> p = p
+    p <> Nada = p
+    Produto v1 _ <> Produto v2 _ = Produto (v1 + v2) Total
 
-and' :: Pergunta -> Pergunta -> [Bool]
-and' x y = [pergToBool x, pergToBool y, pergToBool x && pergToBool y]
+instance Monoid Produto where
+    mempty = Nada
 
-or' :: Pergunta -> Pergunta -> [Bool]
-or' x y = [pergToBool x, pergToBool y, pergToBool x || pergToBool y]
+    -- Sem o uso de monoides, seria necessário a criação manual de uma função para somar os 
+    -- valores dos produtos, tratar explicitamente casos como a ausencia e garantindo que 
+    -- o tipo retornado sempre use o construtor Total. tornando o código menos reutilizavel, 
+    -- mais verboso e menos generico, dificultando a composição funcional e o uso direto de operações 
+    -- padrão como <> ou mconcat, que facilitam combinações automaticas e elegantes quando se usa Monoid.
 
-not' :: Pergunta -> Bool
-not' x = not (pergToBool x)
+-- EX 5.2
+totalGeral :: [Produto] -> Produto
+totalGeral = mconcat
 
--- 3.2 FAÇA O TIPO TEMPERATURA QUE PODE TER VALORES CELSIUS , FARENHEIT OU KELVIN . IMPLEMENTE AS FUNÇÕES:
--- converterCelsius : recebe um valor double e uma temperatura, e faz a conversão para Celsius.
--- converterKelvin : recebe um valor double e uma temperatura, e faz a conversão para Kelvin.
--- converterFarenheit : recebe um valor double e uma temperatura, e faz a conversão para Farenheit.
--- data Temperatura = Kelvin Double | Celsius Double | Farenheit Double deriving Show
+-- EX 5.3
+newtype Min = Min Int deriving (Show, Eq, Ord)
 
-paraCelsius :: Temperatura -> Double
-paraCelsius (Celsius t) = t
-paraCelsius (Farenheit t) = (t - 32) * 1.8
-paraCelsius (Kelvin t) = t - 273.15
+instance Semigroup Min where
+    Min x <> Min y = Min (min x y)
 
-paraKelvin :: Temperatura -> Double
-paraKelvin t = paraCelsius t + 273.15
+instance Monoid Min where
+    mempty = Min maxBound
 
-paraFarenheit :: Temperatura -> Double
-paraFarenheit t = paraCelsius t * 1.8 + 32
+minimo = Min (-32) <> Min (-34) <> Min (-33) -- Min (-34)
 
--- 3.3 IMPLEMENTE UMA FUNÇÃO QUE SIMULE O VENCEDOR DE UMA PARTIDA DE PEDRA, PAPEL E TESOURA USANDO TIPOS CRIADOS. CASOS DE EMPATE DEVEM SER CONSIDERADOS EM SEU TIPO.
-data Jokenpo = Pedra | Papel | Tesoura deriving (Show, Eq)
-data Resultado = VitoraJogador1 | VitoraJogador2 | Empate deriving (Show, Eq)
+    -- Valor mempty = Valor neutro, no caso da função 'min' deve ser o maior valor possivel, ja que qualquer
+    -- outro valor deve ser menor.
 
-jogar :: Jokenpo -> Jokenpo -> Resultado
-jogar Pedra Tesoura = VitoraJogador1
-jogar Tesoura Papel = VitoraJogador1
-jogar Papel Pedra   = VitoraJogador1
-jogar j1 j2 | j1 == j2  = Empate | otherwise = VitoraJogador2
+-- EX 5.4
+minAll :: [Min] -> Min
+minAll = mconcat
 
--- 3.4 FAÇA UMA FUNÇÃO QUE RETORNE UMA STRING, COM TODAS AS VOGAIS MAIÚSCULAS E MINÚSCULAS ELIMINADAS DE UMA STRING PASSADA POR PARÂMETRO USANDO LIST COMPREENSHION.
-consoantes :: String -> String
-consoantes xs = [ x | x <- xs, x `notElem` "aeiouAEIOU"]
+-- EX 5.5
+data Paridade = Par | Impar deriving (Show, Eq)
+class ParImpar a where
+    decide :: a -> Paridade
 
--- 3.5 Sabe-se que as unidades imperiais de comprimento podem ser Inch , Yard ou Foot (há outras ignoradas aqui). Sabe-se que 1in=0.0254m , 1yd=0.9144m , 1ft=0.3048 . Faça a função converterMetros que recebe a unidade imperial e o valor correspondente nesta unidade. Esta função deve retornar o valor em metros.
--- Implemente também a função converterImperial , que recebe um valor em metros e a unidade de conversão. Esta função deve retornar o valor convertido para a unidade desejada. data Imperial = Inch Double | Yard Double | Foot Double deriving Show
+instance ParImpar Int where
+    decide n = if even n then Par else Impar
 
-converterMetros :: Imperial -> Double
-converterMetros (Inch l) = l*0.0254
-converterMetros (Yard l) = l*0.9144
-converterMetros (Foot l) = l*0.3048
+instance ParImpar [a] where
+  decide xs = decide (length xs)
 
-converterImperial :: Double -> Imperial -> Double
-converterImperial l (Inch _) = l / converterMetros (Inch 1)
-converterImperial l (Yard _) = l / converterMetros (Yard 1)
-converterImperial l (Foot _) = l / converterMetros (Foot 1)
+instance ParImpar Bool where
+  decide False = Par
+  decide True  = Impar
 
--- 3.6 FAÇA UM NOVO TIPO CHAMADO MES , QUE POSSUI COMO VALORES TODOS OS MESES DO ANO. IMPLEMENTE:
--- A FUNÇÃO CHECAFIM , QUE RETORNA O NÚMERO DE DIAS QUE CADA MÊS POSSUI (CONSIDERE FEVEREIRO TENDO 28 DIAS).
--- A FUNÇÃO PROX , QUE RECEBE UM MÊS ATUAL E RETORNA O PRÓXIMO MÊS.
--- A FUNÇÃO ESTACAO , QUE RETORNA A ESTAÇÃO DO ANO DE ACORDO COM o mês e com o hemisfério.
-data Mes = Janeiro | Fevereiro | Marco | Abril | Maio | Junho 
-    | Julho | Agosto | Setembro | Novembro | Outubro | Dezembro deriving (Show, Eq)
+-- EX 5.7
+data Arvore a = Vazia | Folha a | Raiz a (Arvore a) (Arvore a) deriving (Show, Eq)
 
-checaFim :: Mes -> Int
-checaFim Janeiro    = 31
-checaFim Fevereiro  = 28
-checaFim Marco      = 31
-checaFim Abril      = 30
-checaFim Maio       = 31
-checaFim Junho      = 30
-checaFim Julho      = 31
-checaFim Agosto     = 31
-checaFim Setembro   = 30
-checaFim Outubro    = 31
-checaFim Novembro   = 30
-checaFim Dezembro   = 31
+mapa :: (a -> b) -> Arvore a -> Arvore b
+mapa _ Vazia = Vazia
+mapa f (Folha x) = Folha (f x)
+mapa f (Raiz x esq dir) = Raiz (f x) (mapa f esq) (mapa f dir)
 
-prox :: Mes -> Mes
-prox Janeiro   = Fevereiro
-prox Fevereiro = Marco
-prox Marco     = Abril
-prox Abril     = Maio
-prox Maio      = Junho
-prox Junho     = Julho
-prox Julho     = Agosto
-prox Agosto    = Setembro
-prox Setembro  = Outubro
-prox Outubro   = Novembro
-prox Novembro  = Dezembro
-prox Dezembro  = Janeiro
+-- EX 5.8
+inteiros :: Arvore Int
+inteiros = Raiz 1 (Folha 2) (Folha 3)
+resultado = mapa (+5) inteiros
 
-data Hemisferio = Norte | Sul
-  deriving Show
+-- EX 5.11
+preOrdem :: Arvore a -> [a]
+preOrdem Vazia = []
+preOrdem (Folha x) = [x]
+preOrdem (Raiz x esq dir) = [x] ++ preOrdem esq ++ preOrdem dir
 
-data Estacao = Verao | Outono | Inverno | Primavera
-  deriving Show
+posOrdem :: Arvore a -> [a]
+posOrdem Vazia = []
+posOrdem (Folha x) = [x]
+posOrdem (Raiz x esq dir) = posOrdem esq ++ posOrdem dir ++ [x]
 
-estacao :: Mes -> Hemisferio -> Estacao
-estacao mes Norte
-  | mes `elem` [Dezembro, Janeiro, Fevereiro] = Inverno
-  | mes `elem` [Marco, Abril, Maio]           = Primavera
-  | mes `elem` [Junho, Julho, Agosto]           = Verao
-  | mes `elem` [Setembro, Outubro, Novembro]    = Outono
-estacao mes Sul
-  | mes `elem` [Dezembro, Janeiro, Fevereiro] = Verao
-  | mes `elem` [Marco, Abril, Maio]           = Outono
-  | mes `elem` [Junho, Julho, Agosto]           = Inverno
-  | mes `elem` [Setembro, Outubro, Novembro]    = Primavera
+-- Raiz 15 (Raiz 11 (Folha 6) (Raiz 12 (Folha 10) Vazia)) (Raiz 20 Vazia (Raiz 22 (Folha 21) Vazia))
+{-
+      ______15______
+    __11___     __20__
+    6  __12_    _   __22_
+       10  _        21  _
+-}{-
+    preOrdem Raiz 15 esq dir
+[15] ++ preOrdem esq ++ preOrdem dir
 
--- 3.7 FAÇA UMA FUNÇÃO QUE RECEBA UMA STRING E RETORNE TRUE SE ESTA FOR UM PALÍNDROMO; CASO CONTRÁRIO, FALSE .
-palimdromo :: String -> Bool
-palimdromo s = s == reverse s
+esq = Raiz 11 (Folha 6) (Raiz 12 (Folha 10) Vazia)
+preOrdem (Raiz 11 (Folha 6) (Raiz 12 (Folha 10) Vazia))
+[11] ++ preOrdem (Folha 6) ++ preOrdem (Raiz 12 ...)
 
+preOrdem (Folha 6) = [6]
+
+preOrdem (Raiz 12 (Folha 10) Vazia)
+[12] ++ preOrdem (Folha 10) ++ preOrdem Vazia
+[12] ++ [10] ++ []
+= [12, 10]
+
+[11] ++ [6] ++ [12, 10]
+= [11, 6, 12, 10]
+
+dir = Raiz 20 Vazia (Raiz 22 (Folha 21) Vazia)
+preOrdem (Raiz 20 Vazia (Raiz 22 (Folha 21) Vazia))
+[20] ++ preOrdem Vazia ++ preOrdem (Raiz 22 ...)
+[20] ++ [] ++ ([22] ++ preOrdem (Folha 21) ++ preOrdem Vazia)
+[20] ++ [] ++ [22] ++ [21] ++ []
+= [20, 22, 21]
+
+Final:
+[15] ++ [11, 6, 12, 10] ++ [20, 22, 21]
+= [15, 11, 6, 12, 10, 20, 22, 21]
+-}
+{-
+    posOrdem (Raiz 15 esq dir)
+posOrdem esq ++ posOrdem dir ++ [15]
+
+esq = Raiz 11 (Folha 6) (Raiz 12 (Folha 10) Vazia)
+posOrdem (Raiz 11 (Folha 6) (Raiz 12 (Folha 10) Vazia))
+posOrdem (Folha 6) ++ posOrdem (Raiz 12 ...) ++ [11]
+
+posOrdem (Folha 6) = [6]
+
+posOrdem (Raiz 12 (Folha 10) Vazia)
+posOrdem (Folha 10) ++ posOrdem Vazia ++ [12]
+= [10] ++ [] ++ [12]
+= [10, 12]
+
+[6] ++ [10, 12] ++ [11]
+= [6, 10, 12, 11]
+
+dir = Raiz 20 Vazia (Raiz 22 (Folha 21) Vazia)
+posOrdem (Raiz 20 Vazia (Raiz 22 (Folha 21) Vazia))
+posOrdem Vazia ++ posOrdem (Raiz 22 ...) ++ [20]
+[] ++ (posOrdem (Folha 21) ++ posOrdem Vazia ++ [22]) ++ [20]
+[] ++ [21] ++ [] ++ [22] ++ [20]
+= [21, 22, 20]
+
+Final:
+[6, 10, 12, 11] ++ [21, 22, 20] ++ [15]
+= [6, 10, 12, 11, 21, 22, 20, 15]
+-}
