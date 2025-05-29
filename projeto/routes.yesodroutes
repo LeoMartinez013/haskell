@@ -1,0 +1,4 @@
+/              HomeR    GET
+/add/#Int/#Int AddR     GET
+/teste         TesteR   GET
+/pagina-um     PaginaUmR GET
